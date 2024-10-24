@@ -38,18 +38,19 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           
-          # Switch to gh-pages branch
+          # Create a new branch if it doesn't exist
           git fetch origin
-          git checkout gh-pages || git checkout --orphan gh-pages
-          git reset --hard
+          git checkout gh-pages || git checkout -b gh-pages
           
-          # Copy built files to root (dist is the Vite output directory)
+          # Clear the current contents of the gh-pages branch
           rm -rf *
-          cp -r ../dist/* .
           
+          # Copy built files to the root
+          cp -r dist/* .  # Assuming dist is the output directory of Vite
+
           # Commit and push changes to gh-pages branch
           git add .
-          git commit -m "Deploy to GitHub Pages"
+          git commit -m "Deploy to GitHub Pages" || echo "No changes to commit"
           git push origin gh-pages --force
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
