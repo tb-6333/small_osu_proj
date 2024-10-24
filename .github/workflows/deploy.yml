@@ -32,6 +32,13 @@ jobs:
       - name: Build project
         run: npm run build  # Ensure your build script is defined in package.json
 
+      - name: Check build output
+        run: |
+          echo "Listing files in the current directory:"
+          ls -la
+          echo "Listing files in the dist directory:"
+          ls -la dist  # Check if the dist directory exists and is populated
+
       - name: Deploy to GitHub Pages
         run: |
           # Configure Git
@@ -44,9 +51,9 @@ jobs:
           
           # Clear the current contents of the gh-pages branch
           rm -rf *
-          
+
           # Copy built files to the root
-          cp -r dist/* .  # Assuming dist is the output directory of Vite
+          cp -r dist/* . || echo "No files to copy from dist directory. Check build output."
 
           # Commit and push changes to gh-pages branch
           git add .
