@@ -41,23 +41,14 @@ jobs:
 
       - name: Deploy to GitHub Pages
         run: |
-          # Configure Git
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          
-          # Create a new branch if it doesn't exist
-          git fetch origin
-          git checkout gh-pages || git checkout -b gh-pages
-          
-          # Clear the current contents of the gh-pages branch
-          rm -rf *
+      
+          git checkout -B gh-pages
+          cp -r dist/* .
+          git add -A
+          git commit -m "Deploy to GitHub Pages"
+          git push --force https://x-access-token:${{ secrets.DEPLOY_TOKEN }}@github.com/tb-6333/small_osu_proj.git gh-pages
 
-          # Copy built files to the root
-          cp -r dist/* . || echo "No files to copy from dist directory. Check build output."
-
-          # Commit and push changes to gh-pages branch
-          git add .
-          git commit -m "Deploy to GitHub Pages" || echo "No changes to commit"
-          git push origin gh-pages --force
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}  # Use your secret here
