@@ -1,21 +1,13 @@
 name: Deploy Vite + Vue 3 to GitHub Pages
 
 on:
-  # Trigger workflow on pushes to the main branch
   push:
     branches:
-      - main
-
-  # Allows manual triggering of the workflow
+      - main  # Change this to your default branch if different
   workflow_dispatch:
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -24,31 +16,23 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'  # Adjust the Node.js version if necessary
+          node-version: '18'  # Specify the Node.js version
 
       - name: Install dependencies
-        run: npm install
+        run: npm install  # Install your project's dependencies
 
-      - name: Build project
-        run: npm run build  # Ensure your build script is defined in package.json
+      - name: Build the project
+        run: npm run build  # Adjust if your build script is named differently
 
-      - name: Check build output
-        run: |
-          echo "Listing files in the current directory:"
-          ls -la
-          echo "Listing files in the dist directory:"
-          ls -la dist  # Check if the dist directory exists and is populated
-
-      - name: Deploy to GitHub Pages
+      - name: Configure Git
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-      
-          git checkout -B gh-pages
-          cp -r dist/* .
-          git add -A
-          git commit -m "Deploy to GitHub Pages"
-          git push --force https://x-access-token:${{ secrets.DEPLOY_TOKEN }}@github.com/tb-6333/small_osu_proj.git gh-pages
 
-        env:
-          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}  # Use your secret here
+      - name: Deploy to GitHub Pages
+        run: |
+          git checkout -B gh-pages
+          cp -r dist/* .  # Copy built files to the root
+          git add -A
+          git commit -m "Deploy to GitHub Pages" || echo "No changes to commit"
+          git push --force "https://x-access-token:${{ secrets.DEPLOY_TOKEN }}@github.com/tb-6333/small_osu_proj.git" gh-pages
